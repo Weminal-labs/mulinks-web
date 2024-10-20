@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { TransactionHash } from "@/components/TransactionHash";
 import { useToast } from "@/hooks/use-toast";
 import { ActionLayout, LayoutProps } from "@/components/ActionLayout";
+import { useAccount, useChainId } from 'wagmi';
 
 const ActionContainer = () => {
   const pathname = usePathname();
@@ -11,7 +12,8 @@ const ActionContainer = () => {
   const [addressFromAction, setAddressFromAction] = useState("");
   const { toast } = useToast();
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
-  // const { account, network, signAndSubmitTransaction } = useWallet();
+  const account = useAccount();
+
 
   interface ActionWithParameters {
     href: string;
@@ -43,15 +45,6 @@ const ActionContainer = () => {
   });
 
   const handleActionClick = async (action: Action) => {
-    // console.log("account :", account);
-    // if (!account) {
-    //   toast({
-    //     title: "Error",
-    //     description: "Please connect your wallet before making a transaction.",
-    //     variant: "destructive",
-    //   });
-    //   return;
-    // }
     try {
       let url = action.href;
 
@@ -79,10 +72,13 @@ const ActionContainer = () => {
         });
       }
 
+      console.log("URL being called:", url);
+
       const body = {
-        // fromAddress: account.address as string,
-        toAddress: addressFromAction as string,
+        address: account.address // Sử dụng trực tiếp account.address
       };
+
+      console.log("Request body:", body);
 
       const response = await fetch(url, {
         method: "POST",
@@ -93,21 +89,26 @@ const ActionContainer = () => {
         credentials: "include",
       });
 
-      const result = await response.json();
-      const { transaction, message } = result;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
 
-      // const pendingTransaction = await signAndSubmitTransaction(transaction);
-      // await aptosClient(network).waitForTransaction({
-      //   transactionHash: pendingTransaction.hash,
-      // });
+      const result = await response.json();
+      console.log("API response:", result);
+
+      const { transaction, message } = result;
 
       toast({
         title: "Success",
-        description: "Transaction submitted successfully",
-        // <TransactionHash hash={pendingTransaction.hash} network={network} />
+        description: message || "Transaction submitted successfully",
       });
     } catch (error) {
       console.error("Error handling action click:", error);
+      toast({
+        title: "Error",
+        variant: "destructive",
+      });
     }
   };
 
@@ -167,6 +168,7 @@ const ActionContainer = () => {
       try {
         const response = await fetch(apiAction);
         const data = await response.json();
+        console.log("API response data:", data); // Thêm dòng này
         const baseUrl = new URL(apiAction).origin;
         const mappedProps = mapApiResponseToLayoutProps(data, baseUrl);
         setLayoutProps(mappedProps);
@@ -175,8 +177,16 @@ const ActionContainer = () => {
       }
     };
 
-    fetchApiData();
-  }, [apiAction]);
+    if (apiAction && account.address) {
+      fetchApiData();
+    }
+  }, [apiAction, account.address]);
+
+  useEffect(() => {
+    if (account.address) {
+      setAddressFromAction(account.address);
+    }
+  }, [account.address]);
 
   if (!layoutProps) {
     return <div>Loading...</div>;

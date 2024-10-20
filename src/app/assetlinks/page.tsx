@@ -33,13 +33,17 @@ export default function ActionPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputValue) {
-      const data = await fetchActionData(inputValue);
-      if (data) {
-        const encodedInputValue = encodeURIComponent(inputValue);
-
-        router.push(`/assetlinks/api-action=${encodedInputValue}`);
-      } else {
-        setErrorMessage("Failed to validate URL");
+      try {
+        const data = await fetchActionData(inputValue);
+        if (data) {
+          const encodedInputValue = encodeURIComponent(inputValue);
+          router.push(`/assetlinks/api-action=${encodedInputValue}`);
+        } else {
+          setErrorMessage("Không thể xác thực URL");
+        }
+      } catch (error) {
+        console.error("Lỗi khi xử lý yêu cầu:", error);
+        setErrorMessage("Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại sau.");
       }
     }
   };
