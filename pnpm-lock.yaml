@@ -38,6 +38,9 @@ importers:
       '@tsparticles/slim':
         specifier: ^3.5.0
         version: 3.5.0
+      '@wagmi/core':
+        specifier: ^2.13.9
+        version: 2.13.9(@tanstack/query-core@5.59.13)(@types/react@18.3.11)(react@18.3.1)(typescript@5.6.3)(viem@2.21.30(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10))
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0

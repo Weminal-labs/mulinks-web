@@ -19,6 +19,7 @@
     "@tsparticles/engine": "^3.5.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.5.0",
+    "@wagmi/core": "^2.13.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "ethers": "^6.13.4",

@@ -101,7 +101,7 @@ const config = getDefaultConfig({
       wallets: [trustWallet, ledgerWallet],
     },
   ],
-  chains: [uniqueChain], // Thêm uniqueChain vào mảng chains
+  chains: [uniqueChain, quartzMainnet, opalTestnet], // Thêm uniqueChain vào mảng chains
   transports: {
     [8880]: http("https://rpc.unique.network"),
     [8881]: http("https://rpc-quartz.unique.network"),

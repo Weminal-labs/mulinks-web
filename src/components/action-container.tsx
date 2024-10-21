@@ -4,7 +4,24 @@ import { usePathname } from "next/navigation";
 import { TransactionHash } from "@/components/TransactionHash";
 import { useToast } from "@/hooks/use-toast";
 import { ActionLayout, LayoutProps } from "@/components/ActionLayout";
-import { useAccount, useChainId } from 'wagmi';
+import {
+  type BaseError,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+  useAccount,
+  useChainId
+} from "wagmi";
+
+import {
+  BLOCK_EXPLORER_OPAL,
+  BLOCK_EXPLORER_QUARTZ,
+  BLOCK_EXPLORER_UNIQUE,
+  CHAINID,
+  CONTRACT_ADDRESS_OPAL,
+  CONTRACT_ADDRESS_QUARTZ,
+  CONTRACT_ADDRESS_UNIQUE,
+} from "./contract";
+import { abi } from "./abi";
 
 const ActionContainer = () => {
   const pathname = usePathname();
@@ -14,6 +31,41 @@ const ActionContainer = () => {
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
   const account = useAccount();
 
+  let chainId = useChainId();
+  let contractAddress: any;
+  switch (chainId) {
+
+    case CHAINID.UNIQUE:
+      contractAddress = CONTRACT_ADDRESS_UNIQUE;
+      break;
+
+    case CHAINID.QUARTZ:
+      contractAddress = CONTRACT_ADDRESS_QUARTZ;
+      break;
+    case CHAINID.OPAL:
+      contractAddress = CONTRACT_ADDRESS_OPAL;
+      break;
+    default:
+      break;
+  }
+  let blockexplorer;
+  switch (chainId) {
+
+    case CHAINID.UNIQUE:
+      blockexplorer = BLOCK_EXPLORER_UNIQUE;
+      break;
+
+    case CHAINID.QUARTZ:
+      blockexplorer = BLOCK_EXPLORER_QUARTZ;
+      break;
+    case CHAINID.OPAL:
+      blockexplorer = BLOCK_EXPLORER_OPAL;
+      break;
+    default:
+      break;
+  }
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
+  // https://opal.subscan.io/tx/
 
   interface ActionWithParameters {
     href: string;
@@ -72,13 +124,9 @@ const ActionContainer = () => {
         });
       }
 
-      console.log("URL being called:", url);
-
       const body = {
         address: account.address // Sử dụng trực tiếp account.address
       };
-
-      console.log("Request body:", body);
 
       const response = await fetch("http://localhost:80/api/actions/mint-nft/mint", {
         method: "POST",
@@ -89,18 +137,21 @@ const ActionContainer = () => {
         credentials: "include",
       });
 
-      console.log(response);
-
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const result = await response.json();
-      console.log("API response:", result);
 
       const { transaction, message } = result;
-      console.log(transaction);
+
+      await writeContract({
+        abi,
+        address: contractAddress,
+        functionName: "safeMint",
+        args: [`0x${account.address?.slice(2)}`, response.url.toString()], // Pass the 'to' and 'uri' values as arguments
+      });
 
       toast({
         title: "Success",
@@ -158,11 +209,8 @@ const ActionContainer = () => {
     const parts = pathname.split("api-action=");
     if (parts.length > 1) {
       const decodedPath = decodeURIComponent(parts[1]);
-      console.log("decodedPath :", decodedPath);
-      // tách ra để lấy link và address
 
       setApiAction(decodedPath);
-      // setAddressFromAction(addressFromLink);
     }
   }, [pathname]);
 
@@ -171,7 +219,6 @@ const ActionContainer = () => {
       try {
         const response = await fetch(apiAction);
         const data = await response.json();
-        console.log("API response data:", data); // Thêm dòng này
         const baseUrl = new URL(apiAction).origin;
         const mappedProps = mapApiResponseToLayoutProps(data, baseUrl);
         setLayoutProps(mappedProps);
