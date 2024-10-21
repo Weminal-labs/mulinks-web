@@ -80,7 +80,7 @@ const ActionContainer = () => {
 
       console.log("Request body:", body);
 
-      const response = await fetch(url, {
+      const response = await fetch("http://localhost:80/api/actions/mint-nft/mint", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -88,6 +88,8 @@ const ActionContainer = () => {
         body: JSON.stringify(body),
         credentials: "include",
       });
+
+      console.log(response);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -98,6 +100,7 @@ const ActionContainer = () => {
       console.log("API response:", result);
 
       const { transaction, message } = result;
+      console.log(transaction);
 
       toast({
         title: "Success",
