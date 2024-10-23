@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import TopLoader from "@/components/layouts/toploader";
 import { Providers } from "@/components/wagmi-providers";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,7 +33,8 @@ export default function RootLayout({
       >
         <TopLoader />
         <Providers>
-        {children}
+          <Toaster />
+          {children}
         </Providers>
       </body>
     </html>
