@@ -1,5 +1,5 @@
 import { BaseButtonProps } from "@/components/ui/inputs/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { TransactionHash } from "@/components/TransactionHash";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +9,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
   useAccount,
-  useChainId
+  useChainId,
 } from "wagmi";
 
 import {
@@ -30,11 +30,13 @@ const ActionContainer = () => {
   const { toast } = useToast();
   const [layoutProps, setLayoutProps] = useState<LayoutProps | null>(null);
   const account = useAccount();
+  const [transactionStatus, setTransactionStatus] = useState<
+    "idle" | "pending" | "success"
+  >("idle");
 
   let chainId = useChainId();
   let contractAddress: any;
   switch (chainId) {
-
     case CHAINID.UNIQUE:
       contractAddress = CONTRACT_ADDRESS_UNIQUE;
       break;
@@ -50,7 +52,6 @@ const ActionContainer = () => {
   }
   let blockexplorer;
   switch (chainId) {
-
     case CHAINID.UNIQUE:
       blockexplorer = BLOCK_EXPLORER_UNIQUE;
       break;
@@ -65,7 +66,10 @@ const ActionContainer = () => {
       break;
   }
   const { data: hash, error, isPending, writeContract } = useWriteContract();
-  // https://opal.subscan.io/tx/
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
 
   interface ActionWithParameters {
     href: string;
@@ -96,114 +100,148 @@ const ActionContainer = () => {
     onClick: () => handleActionClick(action),
   });
 
-  const handleActionClick = async (action: Action) => {
-    try {
-      let url = action.href;
+  const handleActionClick = useCallback(
+    async (action: Action) => {
+      try {
+        setTransactionStatus("pending");
+        let url = action.href;
 
-      if (isActionWithParameters(action)) {
-        const params = action.parameters.reduce((acc: any, param) => {
-          const inputElement = document.querySelector(
-            `[name="amount-value"]`
-          ) as HTMLInputElement;
-          const value = inputElement?.value;
+        if (isActionWithParameters(action)) {
+          const params = action.parameters.reduce((acc: any, param) => {
+            const inputElement = document.querySelector(
+              `[name="amount-value"]`
+            ) as HTMLInputElement;
+            const value = inputElement?.value;
 
-          if (param.required && !value) {
-            alert(`The ${param.label} is required.`);
+            if (param.required && !value) {
+              alert(`The ${param.label} is required.`);
+              return acc;
+            }
+
+            if (value) {
+              acc[param.name] = encodeURIComponent(value);
+            }
+
             return acc;
+          }, {});
+
+          Object.keys(params).forEach((key) => {
+            url = url.replace(`{${key}}`, params[key]);
+          });
+        }
+
+        const body = {
+          address: account.address, // Sử dụng trực tiếp account.address
+        };
+
+        const response = await fetch(
+          "http://localhost:80/api/actions/mint-nft/mint",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+            credentials: "include",
           }
+        );
 
-          if (value) {
-            acc[param.name] = encodeURIComponent(value);
-          }
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `HTTP error! status: ${response.status}, message: ${errorText}`
+          );
+        }
 
-          return acc;
-        }, {});
+        const result = await response.json();
 
-        Object.keys(params).forEach((key) => {
-          url = url.replace(`{${key}}`, params[key]);
+        const { transaction, message } = result;
+
+        const tx = await writeContract({
+          abi,
+          address: contractAddress,
+          functionName: "safeMint",
+          args: [`0x${account.address?.slice(2)}`, response.url.toString()],
+        });
+
+        // Không cần setTimeout nữa, vì chúng ta sẽ sử dụng useWaitForTransactionReceipt
+      } catch (error) {
+        console.error("Error handling action click:", error);
+        setTransactionStatus("idle");
+        toast({
+          title: "Error",
+          variant: "destructive",
         });
       }
+    },
+    [account.address, contractAddress, toast, writeContract]
+  );
 
-      const body = {
-        address: account.address // Sử dụng trực tiếp account.address
-      };
-
-      const response = await fetch("http://localhost:80/api/actions/mint-nft/mint", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const result = await response.json();
-
-      const { transaction, message } = result;
-
-      await writeContract({
-        abi,
-        address: contractAddress,
-        functionName: "safeMint",
-        args: [`0x${account.address?.slice(2)}`, response.url.toString()], // Pass the 'to' and 'uri' values as arguments
-      });
-
+  useEffect(() => {
+    if (isConfirmed) {
+      setTransactionStatus("success");
       toast({
         title: "Success",
-        description: message || "Transaction submitted successfully",
-      });
-    } catch (error) {
-      console.error("Error handling action click:", error);
-      toast({
-        title: "Error",
-        variant: "destructive",
+        description: "Transaction confirmed successfully",
       });
     }
-  };
+  }, [isConfirmed, toast]);
 
-  const mapApiResponseToLayoutProps = (
-    apiResponse: any,
-    baseUrl: string
-  ): LayoutProps => {
-    const actionsWithParameters = apiResponse.links.actions.filter(
-      isActionWithParameters
-    );
+  const mapApiResponseToLayoutProps = useCallback(
+    (apiResponse: any, baseUrl: string): LayoutProps => {
+      const actionsWithParameters = apiResponse.links.actions.filter(
+        isActionWithParameters
+      );
 
-    const actionsWithoutParameters = apiResponse.links.actions.filter(
-      (action: Action): action is ActionWithoutParameters =>
-        !("parameters" in action) || action.parameters === undefined
-    );
+      const actionsWithoutParameters = apiResponse.links.actions.filter(
+        (action: Action): action is ActionWithoutParameters =>
+          !("parameters" in action) || action.parameters === undefined
+      );
 
-    return {
-      stylePreset: "default",
-      title: apiResponse.title,
-      description: apiResponse.description.trim(),
-      image: apiResponse.icon,
-      type: "trusted",
-      websiteUrl: baseUrl,
-      websiteText: baseUrl,
-      buttons: actionsWithoutParameters.map((action: any) => ({
-        label: action.label,
-        text: action.label,
-        onClick: () => handleActionClick(action),
-      })),
-      inputs: actionsWithParameters.flatMap((action: any) =>
-        action.parameters.map((param: any) => ({
-          type: "text",
-          name: param.name,
-          placeholder: param.label,
-          required: param.required,
-          disabled: false,
-          button: createButton(action),
-        }))
-      ),
-    };
-  };
+      return {
+        stylePreset: "default",
+        title: apiResponse.title,
+        description: apiResponse.description.trim(),
+        image: apiResponse.icon,
+        type: "trusted",
+        websiteUrl: baseUrl,
+        websiteText: baseUrl,
+        buttons: actionsWithoutParameters.map((action: any) => ({
+          label: transactionStatus === "success" ? "Success" : action.label,
+          text: transactionStatus === "success" ? "Mint Success" : action.label,
+          onClick: () => handleActionClick(action),
+          className: `${
+            transactionStatus === "success"
+              ? "bg-green-500 hover:bg-green-600"
+              : "bg-blue-500 hover:bg-blue-600"
+          } text-white font-bold py-2 px-4 rounded transition-colors duration-200`,
+          disabled:
+            transactionStatus === "pending" || isPending || isConfirming,
+        })),
+        inputs: actionsWithParameters.flatMap((action: any) =>
+          action.parameters.map((param: any) => ({
+            type: "text",
+            name: param.name,
+            placeholder: param.label,
+            required: param.required,
+            disabled: false,
+            button: {
+              ...createButton(action),
+              text: transactionStatus === "success" ? "Success" : action.label,
+              className: `${
+                transactionStatus === "success"
+                  ? "bg-green-500 hover:bg-green-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white font-bold py-2 px-4 rounded transition-colors duration-200`,
+              disabled:
+                transactionStatus === "pending" || isPending || isConfirming,
+            },
+          }))
+        ),
+      };
+    },
+    [transactionStatus, isPending, isConfirming, handleActionClick]
+  );
 
   useEffect(() => {
     const parts = pathname.split("api-action=");
@@ -230,7 +268,12 @@ const ActionContainer = () => {
     if (apiAction && account.address) {
       fetchApiData();
     }
-  }, [apiAction, account.address]);
+  }, [
+    apiAction,
+    account.address,
+    mapApiResponseToLayoutProps,
+    transactionStatus,
+  ]);
 
   useEffect(() => {
     if (account.address) {
@@ -245,7 +288,7 @@ const ActionContainer = () => {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-2 py-4 md:px-8 dark:bg-black">
       <div className="w-full max-w-md">
-        <ActionLayout {...layoutProps} />
+        {layoutProps && <ActionLayout {...layoutProps} />}
       </div>
     </main>
   );
