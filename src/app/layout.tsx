@@ -4,6 +4,7 @@ import "./globals.css";
 import TopLoader from "@/components/layouts/toploader";
 import { Providers } from "@/components/wagmi-providers";
 import { Toaster } from "@/components/ui/toaster";
+import Script from "next/script";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,7 +33,10 @@ export default function RootLayout({
         <meta name="twitter:card" content="player" />
         <meta name="twitter:site" content="@kayx86" />
         <meta name="twitter:title" content="Demo Sblinks" />
-        <meta name="twitter:description" content="Brief description of your app" />
+        <meta
+          name="twitter:description"
+          content="Brief description of your app"
+        />
         <meta
           name="twitter:player"
           content="https://vite-react-chauanhtuan185s-projects.vercel.app/swap"
@@ -43,10 +47,26 @@ export default function RootLayout({
           name="twitter:image"
           content="https://app.ekubo.org/pwa-512x512.png"
         />
-        <meta property="og:url" content="https://vite-react-chauanhtuan185s-projects.vercel.app/swap" />
+        <meta
+          property="og:url"
+          content="https://vite-react-chauanhtuan185s-projects.vercel.app/swap"
+        />
         <meta property="og:title" content="test" />
         <meta property="og:description" content="test" />
-        <meta property="og:image" content="https://app.ekubo.org/pwa-512x512.png" />
+        <meta
+          property="og:image"
+          content="https://app.ekubo.org/pwa-512x512.png"
+        />
+        <Script id="sandbox-fixer" strategy="afterInteractive">
+          {`
+            document.addEventListener('DOMContentLoaded', function() {
+              var iframes = document.querySelectorAll('iframe');
+              iframes.forEach(function(el) {
+                el.setAttribute('sandbox', 'allow-forms allow-scripts allow-same-origin');
+              });
+            });
+          `}
+        </Script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

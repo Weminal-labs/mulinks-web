@@ -34,16 +34,12 @@ export default function ActionPage() {
     e.preventDefault();
     if (inputValue) {
       try {
-        const data = await fetchActionData(inputValue);
-        if (data) {
-          const encodedInputValue = encodeURIComponent(inputValue);
-          router.push(`/assetlinks/api-action=${encodedInputValue}`);
-        } else {
-          setErrorMessage("Không thể xác thực URL");
-        }
+        const encodedInputValue = encodeURIComponent(inputValue);
+
+        router.push(`/assetlinks/api-action=${encodedInputValue}`);
       } catch (error) {
-        console.error("Lỗi khi xử lý yêu cầu:", error);
-        setErrorMessage("Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại sau.");
+        console.error("Error processing request:", error);
+        setErrorMessage("Error processing request");
       }
     }
   };

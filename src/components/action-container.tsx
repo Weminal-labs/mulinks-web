@@ -204,8 +204,8 @@ const ActionContainer = () => {
         description: apiResponse.description.trim(),
         image: apiResponse.icon,
         type: "trusted",
-        websiteUrl: baseUrl,
-        websiteText: baseUrl,
+        websiteUrl: "https://9de0-115-79-235-27.ngrok-free.app",
+        websiteText: "https://9de0-115-79-235-27.ngrok-free.app",
         buttons: actionsWithoutParameters.map((action: any) => ({
           label: transactionStatus === "success" ? "Success" : action.label,
           text: transactionStatus === "success" ? "Mint Success" : action.label,
@@ -248,7 +248,7 @@ const ActionContainer = () => {
     if (parts.length > 1) {
       const decodedPath = decodeURIComponent(parts[1]);
 
-      setApiAction(decodedPath);
+      setApiAction("http://localhost/api/actions/mint-nft");
     }
   }, [pathname]);
 
