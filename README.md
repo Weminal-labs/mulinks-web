@@ -1,38 +1,38 @@
 # Mulinks🐉
 
 ## Project Homepage
-[Mulinks Website](https://mulinks.example.com)
+[Mulinks Website](https://ulinks-henna.vercel.app)
 
 ## 🎯 Project Goals
-Mulinks là một giao thức và bộ công cụ phát triển cho phép người dùng tương tác với các hành động trên blockchain một cách dễ dàng và hiệu quả. Mục tiêu của dự án là cung cấp một nền tảng mạnh mẽ cho việc phát triển và triển khai các ứng dụng blockchain.
+Mulinks is a protocol and development toolkit that enables users to interact with blockchain actions in an easy and efficient manner. The project's goal is to provide a robust platform for the development and deployment of blockchain applications.
 
 ## 🚀 Features
-- **Tích hợp ví**: Hỗ trợ nhiều loại ví khác nhau để người dùng có thể dễ dàng kết nối và thực hiện giao dịch.
-- **Giao diện thân thiện**: Thiết kế giao diện người dùng trực quan, dễ sử dụng cho cả người mới và người có kinh nghiệm.
-- **Tối ưu hóa hiệu suất**: Sử dụng các công nghệ hiện đại để đảm bảo hiệu suất cao và thời gian tải nhanh.
-- **Hỗ trợ đa chuỗi**: Cho phép người dùng tương tác với nhiều chuỗi blockchain khác nhau.
+- **Wallet Integration**: Supports multiple types of wallets, allowing users to easily connect and perform transactions.
+- **User-Friendly Interface**: Designs an intuitive user interface, easy to use for both beginners and experienced users.
+- **Performance Optimization**: Utilizes modern technologies to ensure high performance and fast loading times.
+- **Multi-Chain Support**: Enables users to interact with multiple blockchain chains.
 
 ## 📈 Roadmap
-- **Giai đoạn 1**: Hoàn thiện tính năng cơ bản và phát hành phiên bản beta.
-- **Giai đoạn 2**: Tích hợp thêm các ví và chuỗi blockchain mới.
-- **Giai đoạn 3**: Cải thiện hiệu suất và tối ưu hóa trải nghiệm người dùng.
-- **Giai đoạn 4**: Phát hành phiên bản chính thức và mở rộng cộng đồng.
+- **Phase 1**: Completes basic features and releases the beta version.
+- **Phase 2**: Integrates additional wallets and blockchain chains.
+- **Phase 3**: Improves performance and optimizes user experience.
+- **Phase 4**: Releases the official version and expands the community.
 
 ## 🧩 User Guide
-Để bắt đầu sử dụng Mulinks, bạn có thể tham khảo hướng dẫn sử dụng chi tiết trong tài liệu. Bạn có thể chạy máy chủ phát triển bằng cách sử dụng lệnh:
+To start using Mulinks, you can refer to the detailed user guide in the documentation. You can run the development server by using the command:
 
 ```bash
 pnpm install
 pnpm run dev
 ```
 
-Sau đó, mở trình duyệt và truy cập [http://localhost:3000](http://localhost:3000) để xem ứng dụng.
+Then, open a browser and access [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## 📚 Documentation
-Tài liệu chi tiết về Mulinks có thể được tìm thấy tại [Tài liệu Mulinks](https://mulinks.example.com/docs).
+Detailed documentation about Mulinks can be found at [Mulinks Documentation](https://mulinks.example.com/docs).
 
 ## 👥 Contributions
-Chúng tôi hoan nghênh mọi đóng góp từ cộng đồng. Bạn có thể tham gia bằng cách gửi pull request hoặc báo cáo lỗi trên [GitHub](https://github.com/mulinks/mulinks).
+We welcome all contributions from the community. You can participate by sending pull requests or reporting issues on [GitHub](https://github.com/mulinks/mulinks).
 
 ## 📝 License
-Dự án này được cấp phép theo [Giấy phép MIT](https://opensource.org/licenses/MIT).
+This project is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
