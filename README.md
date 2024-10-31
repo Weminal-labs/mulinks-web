@@ -1,37 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mulinks🐉
 
-## Getting Started
+## Project Homepage
+[Mulinks Website](https://mulinks.example.com)
 
-First, run the development server:
+## 🎯 Project Goals
+Mulinks là một giao thức và bộ công cụ phát triển cho phép người dùng tương tác với các hành động trên blockchain một cách dễ dàng và hiệu quả. Mục tiêu của dự án là cung cấp một nền tảng mạnh mẽ cho việc phát triển và triển khai các ứng dụng blockchain.
+
+## 🚀 Features
+- **Tích hợp ví**: Hỗ trợ nhiều loại ví khác nhau để người dùng có thể dễ dàng kết nối và thực hiện giao dịch.
+- **Giao diện thân thiện**: Thiết kế giao diện người dùng trực quan, dễ sử dụng cho cả người mới và người có kinh nghiệm.
+- **Tối ưu hóa hiệu suất**: Sử dụng các công nghệ hiện đại để đảm bảo hiệu suất cao và thời gian tải nhanh.
+- **Hỗ trợ đa chuỗi**: Cho phép người dùng tương tác với nhiều chuỗi blockchain khác nhau.
+
+## 📈 Roadmap
+- **Giai đoạn 1**: Hoàn thiện tính năng cơ bản và phát hành phiên bản beta.
+- **Giai đoạn 2**: Tích hợp thêm các ví và chuỗi blockchain mới.
+- **Giai đoạn 3**: Cải thiện hiệu suất và tối ưu hóa trải nghiệm người dùng.
+- **Giai đoạn 4**: Phát hành phiên bản chính thức và mở rộng cộng đồng.
+
+## 🧩 User Guide
+Để bắt đầu sử dụng Mulinks, bạn có thể tham khảo hướng dẫn sử dụng chi tiết trong tài liệu. Bạn có thể chạy máy chủ phát triển bằng cách sử dụng lệnh:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Sau đó, mở trình duyệt và truy cập [http://localhost:3000](http://localhost:3000) để xem ứng dụng.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 Documentation
+Tài liệu chi tiết về Mulinks có thể được tìm thấy tại [Tài liệu Mulinks](https://mulinks.example.com/docs).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 👥 Contributions
+Chúng tôi hoan nghênh mọi đóng góp từ cộng đồng. Bạn có thể tham gia bằng cách gửi pull request hoặc báo cáo lỗi trên [GitHub](https://github.com/mulinks/mulinks).
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# mulinks-web
+## 📝 License
+Dự án này được cấp phép theo [Giấy phép MIT](https://opensource.org/licenses/MIT).
